@@ -2,7 +2,7 @@
 #include <vector>
 #include <unordered_map>
 using namespace std;
-int maxN(unordered_map<int, int> m, unordered_map<int, int>::iterator it )
+int maxN(unordered_map<int, int> &m, unordered_map<int, int>::iterator it )
 {
     int maxN = 0;
     int i = 0;
@@ -43,6 +43,31 @@ int main()
             it->second++;
         }
     }
-
-    cout << maxN(m,it);
+    int h = maxN(m,it);
+    cout << h << " ";
+    int i = 0;
+    while(k<n){
+        //Poistetaan i kuvaajasta
+        //Jos lisattava ja poistettava ovat samat, siirrtyaan suoraan tulostukseen
+        if(list[i]!=list[k]){
+            it = m.find(list[i]);
+            if(it->second < 2){
+                m.erase(it->first);
+            }
+            else{
+                it->second--;
+            }
+            it=m.find(list[k]);
+            if(it==m.end()){
+                m.emplace(list[k],1);
+            }
+            else{
+                it->second++;
+            }
+            h = maxN(m,it);
+        }
+        cout << h << " ";
+        i++;
+        k++;
+    }
 }
