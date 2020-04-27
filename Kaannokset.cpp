@@ -17,8 +17,9 @@ Jos mitään reittiä ei ole olemassa, tulosta luku −1.
 void doMGrid(char mGrid[25][25], int n)
 {
     
-    string inputS = "..*...*.*...*.*.";
-    char input;
+    //string inputS = "..*...*.*...*.*.";
+    string inputS = "...*..*.**........***.....*..**...****.**.***..**......**...*....**...**......***.*.**...*..*.......";
+    //char input;
     int k = 0;
     for (int i = 1; i <= n; i++)
     {
@@ -120,7 +121,7 @@ void countRest(char mGrid[25][25], int vGrid[25][25], int dGrid[25][25], int n)
                     vGrid[j][i] = up;
                     dGrid[j][i] = 1; 
                 }
-                else if(left > up){
+                else if(left < up){
                     vGrid[j][i] = left;
                     dGrid[j][i] = 0; 
                 }
@@ -167,7 +168,7 @@ for (int i = 1; i <= n; i++)
 int main()
 {
     //Size of grid is n*n
-    int n = 4;
+    int n = 10;
     //Obstacles are marked in this grid
     char mGrid[25][25] = {0};
     //Minimum amount of turns to get to the grid are stored in this one
@@ -175,6 +176,10 @@ int main()
     //Keeps track on incoming directions 1 = from up, 2 = from left, 3 = both
     int dGrid[25][25] = {0};
     doMGrid(mGrid, n);
+    if(mGrid[1][1] == '*'){
+        cout << -1;
+        return 0;
+    }
     //Lines with either index 1 have only one route to them, this counts encountered monsters
     countSides(mGrid, vGrid, dGrid, n);
     //Counts rest of grid
