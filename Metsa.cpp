@@ -49,7 +49,7 @@ void largestSquare(pair<int,int> vGrid[25][25], int j, int i, vector<int> &answe
             if(vGrid[j-k][i].second < lowest){
                 lowest = vGrid[j-k][i].second;
             }
-            if(lowest < steps){
+            if(lowest <= steps){
                 break;
             }
             steps++;
@@ -61,7 +61,7 @@ void largestSquare(pair<int,int> vGrid[25][25], int j, int i, vector<int> &answe
             if(vGrid[j][i-k].first < lowest){
                 lowest = vGrid[j][i-k].first;
             }
-            if(lowest < steps){
+            if(lowest <= steps){
                 break;
             }
             steps++;
@@ -97,6 +97,7 @@ void fillVGrid(char mGrid[25][25], pair<int,int> vGrid[25][25],  int n, vector<i
                 largestSquare(vGrid, j,i, answer);
             }
         }
+        cout << "\n";
     }
 }
 
