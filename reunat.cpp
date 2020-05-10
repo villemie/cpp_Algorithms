@@ -22,16 +22,14 @@ int main()
             l=i; r=i+z[i];
         }
     }
-    int skip = 1;
-    for(auto x: z){
-        if(skip == 0){
-            if(x != 0){
-                skip = x-1;
-                cout << x << " ";
-            }
+    vector<int> answer;
+    for(int i = 1; i < n; i++){
+        if(n-i == z[i]){
+            answer.push_back(z[i]);
         }
-        else{
-            skip--;
-        }
+    }
+    sort(answer.begin(),answer.end());
+    for(auto x: answer){
+        cout << x << " ";
     }
 }
