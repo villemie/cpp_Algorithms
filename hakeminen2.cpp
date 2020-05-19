@@ -12,81 +12,85 @@ Syötteen ensimmäisellä rivillä on merkkijono, jossa on n merkkiä.
 Seuraavalla rivillä on kokonaisluku k: haettavien merkkijonojen määrä. Tämän jälkeen on k riviä, jotka kuvaavat merkkijonot.
 Kaikki merkkijonot muodostuvat merkeistä a...z.
 */
-bool sortBySec(const pair<int,string> &a, const pair<int,string> &b)
+bool sortBySec(const pair<int, string> &a, const pair<int, string> &b)
 {
-return a.second < b.second;
+    return a.second < b.second;
 }
 void getSuffix(vector<pair<int, string>> &suffix, string input)
 {
     string s;
     for (int i = 0; i < input.length(); i++)
     {
-        s = input.substr(i,input.length()-1);
-        suffix.push_back(make_pair(i,s));
+        s = input.substr(i, input.length() - 1);
+        suffix.push_back(make_pair(i, s));
     }
     //Arrange suffix to alphabetical order
     sort(suffix.begin(), suffix.end(), sortBySec);
 }
 
-void binarySearch(vector<pair<int, string>> suffix, string search){
-    int lowerBound = 0, higherBound = 10;
-    int i = 0;
-    int j = suffix.size()-1;
+int lowerBound(vector<pair<int, string>> suffix, string search, int &lb){
     int test;
+    int i = 0;
+    int j = suffix.size() - 1;
     int searchLength = search.size();
-    string compareTo;
-    
-    //Finds index of alphabetically first instance
-    while(true){
-        test = (i + j)/2;
+    string compareTo = "";
+
+    while(i <= j){
+        test = (i+j)/2;
         compareTo = suffix[test].second.substr(0,searchLength);
         if(search.compare(compareTo) < 0){
-            j = test;
+            j = test - 1;
         }
         else if(search.compare(compareTo) > 0){
-            i = test;
+            i = test + 1;
         }
         else{
-            compareTo = suffix[test-1].second.substr(0,searchLength);
-            if((test == 0)||search.compare(compareTo) > 0){
-                if(search.compare(compareTo) > 0){
-                    lowerBound = test;
-                    break;
+            if(test == 0){
+                if(search.compare(suffix[test+1].second.substr(0,searchLength))==0){
+                    lb = test;
+                    return 1;
+                }
+                else{
+                    return 0;
                 }
             }
-            j = test;
-            
-        }
-    }
-    
-    
-    //Finds index of alphabetically last instance
-    i = lowerBound;
-    j = suffix.size()-1;
-    while(true){
-        test = (i + j)/2;
-        compareTo = suffix[test].second.substr(0,searchLength);
-        if(search.compare(compareTo) < 0){
-            j = test;
-        }
-        else if(search.compare(compareTo) > 0){
-            i = test;
-        }
-        else{
-            compareTo = suffix[test+1].second.substr(0,searchLength);
-            if((test == suffix.size()-1)||search.compare(compareTo) > 0){
-                j = test;
-            }
             else{
-                higherBound = test;
-                break;
+                if(search.compare(suffix[test-1].second.substr(0,searchLength))==0){
+                    j = test - 1;
+                }
+                else if(search.compare(suffix[test+1].second.substr(0,searchLength))==0){
+                    lb = test;
+                    return 1;
+                }
+                else{
+                    return 0;
+                }
             }
         }
     }
-    
-    //Print answer
-    cout << higherBound-lowerBound+1 << " alaraja: "<< lowerBound <<" yläraja "<< higherBound << "\n";
+    return -1;
 }
+
+
+void binarySearch(vector<pair<int, string>> suffix, string search)
+{
+   int lb;
+   int lbTest = lowerBound(suffix, search, lb);
+   //String is not found
+   if(lbTest == -1){
+       cout << 0 << "\n";
+   } 
+   //String is found exactly one time
+   else if(lbTest == 0){
+       cout << 1 << "\n";
+   }
+   //String is found more than once
+   else{
+       cout << lb << " on alaindeksi";
+   }
+}
+
+
 int main()
 {
     string input = "ABAACBAB";
@@ -95,6 +99,5 @@ int main()
     //cin >> n;
     vector<pair<int, string>> suffix;
     getSuffix(suffix, input);
-    binarySearch(suffix, "B");
-    cout << "We made IT";
+    binarySearch(suffix, "BÄÄ");
 }
