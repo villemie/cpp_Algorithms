@@ -28,41 +28,53 @@ void getSuffix(vector<pair<int, string>> &suffix, string input)
     sort(suffix.begin(), suffix.end(), sortBySec);
 }
 
-int lowerBound(vector<pair<int, string>> suffix, string search, int &lb){
+int lowerBound(vector<pair<int, string>> suffix, string search, int &lb)
+{
     int test;
     int i = 0;
     int j = suffix.size() - 1;
     int searchLength = search.size();
     string compareTo = "";
 
-    while(i <= j){
-        test = (i+j)/2;
-        compareTo = suffix[test].second.substr(0,searchLength);
-        if(search.compare(compareTo) < 0){
+    while (i <= j)
+    {
+        test = (i + j) / 2;
+        compareTo = suffix[test].second.substr(0, searchLength);
+        if (search.compare(compareTo) < 0)
+        {
             j = test - 1;
         }
-        else if(search.compare(compareTo) > 0){
+        else if (search.compare(compareTo) > 0)
+        {
             i = test + 1;
         }
-        else{
-            if(test == 0){
-                if(search.compare(suffix[test+1].second.substr(0,searchLength))==0){
+        else
+        {
+            if (test == 0)
+            {
+                if (search.compare(suffix[test + 1].second.substr(0, searchLength)) == 0)
+                {
                     lb = test;
                     return 1;
                 }
-                else{
+                else
+                {
                     return 0;
                 }
             }
-            else{
-                if(search.compare(suffix[test-1].second.substr(0,searchLength))==0){
+            else
+            {
+                if (search.compare(suffix[test - 1].second.substr(0, searchLength)) == 0)
+                {
                     j = test - 1;
                 }
-                else if(search.compare(suffix[test+1].second.substr(0,searchLength))==0){
+                else if (search.compare(suffix[test + 1].second.substr(0, searchLength)) == 0)
+                {
                     lb = test;
                     return 1;
                 }
-                else{
+                else
+                {
                     return 0;
                 }
             }
@@ -71,33 +83,84 @@ int lowerBound(vector<pair<int, string>> suffix, string search, int &lb){
     return -1;
 }
 
+void upperBound(vector<pair<int, string>> suffix, string search, int &ub)
+{
+    int test;
+    int i = 0;
+    int j = suffix.size() - 1;
+    int searchLength = search.size();
+    string compareTo = "";
+
+    while (i <= j)
+    {
+        test = (i + j) / 2;
+        compareTo = suffix[test].second.substr(0, searchLength);
+        if (search.compare(compareTo) < 0)
+        {
+            j = test - 1;
+        }
+        else if (search.compare(compareTo) > 0)
+        {
+            i = test + 1;
+        }
+        else
+        {
+            if (test == suffix.size() - 1)
+            {
+                ub = suffix.size() - 1;
+                return;
+            }
+            else
+            {
+                if (search.compare(suffix[test + 1].second.substr(0, searchLength)) == 0)
+                {
+                    i = test + 1;
+                }
+                else
+                {
+                    ub = test;
+                    return;
+                } 
+            }
+        }
+    }
+    return;
+}
+
 
 void binarySearch(vector<pair<int, string>> suffix, string search)
 {
-   int lb;
-   int lbTest = lowerBound(suffix, search, lb);
-   //String is not found
-   if(lbTest == -1){
-       cout << 0 << "\n";
-   } 
-   //String is found exactly one time
-   else if(lbTest == 0){
-       cout << 1 << "\n";
-   }
-   //String is found more than once
-   else{
-       cout << lb << " on alaindeksi";
-   }
+    int lb, ub;
+    int lbTest = lowerBound(suffix, search, lb);
+    //String is not found
+    if (lbTest == -1)
+    {
+        cout << 0 << "\n";
+    }
+    //String is found exactly one time
+    else if (lbTest == 0)
+    {
+        cout << 1 << "\n";
+    }
+    //String is found more than once
+    else
+    {
+        upperBound(suffix, search, ub);
+        cout << ub - lb + 1 << "\n";
+    }
 }
-
 
 int main()
 {
     string input = "ABAACBAB";
     //cin >> input;
-    int n = 8;
+    int n = 1;
     //cin >> n;
     vector<pair<int, string>> suffix;
     getSuffix(suffix, input);
-    binarySearch(suffix, "BÄÄ");
+    string searchedWord = "A";
+    for(int i = 0; i < n; i++){
+        //cin >> searchedWord;
+        binarySearch(suffix, searchedWord);
+    }
 }
