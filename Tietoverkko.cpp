@@ -6,14 +6,13 @@ using namespace std;
 /*
 Syrjälän tietoverkossa on n konetta ja m yhteyttä. Jokainen yhteys kuvaa, miten nopeasti jokin kone voi lähettää tietoa toiselle koneelle.
 Kotivalo haluaa ladata tietoa palvelimelta. Mikä on suurin mahdollinen latausnopeus käyttäen verkossa olevia yhteyksiä?
-
 Syöte
 Syötteen ensimmäisellä rivillä on kaksi kokonaislukua n ja m: koneiden ja yhteyksien määrä. Koneet on numeroitu 1,2,…,n Kone 1 on palvelin ja kone n on Kotivalon kone.
 Tämän jälkeen tulee m riviä, jotka kuvaavat yhteydet. Jokaisella rivillä on kolme kokonaislukua a, b ja c: kone a voi lähettää tietoa koneelle b nopeudella c.
 */
-void createGraph(vector<int> graph[100], int flowMatrix[100][100], int n, int m)
+void createGraph(vector<int> graph[100], long long flowMatrix[100][100], int n, int m)
 {
-    vector<int> inputL = {1, 2, 3, 2, 4, 2, 1, 3, 4, 3, 4, 5, 4, 1, 3};
+    vector<int> inputL = {1, 2, 1000000000, 1, 2, 1000000000, 1, 2, 1000000000};
     int i = 0, start, end, flow;
     //Saves edges to graph
     while (i < m * 3)
@@ -31,10 +30,10 @@ void createGraph(vector<int> graph[100], int flowMatrix[100][100], int n, int m)
         //Residual edges 
         graph[end].push_back(start);
         //Amount of flow is saved in flowMatrix
-        flowMatrix[start][end] = flow;
+        flowMatrix[start][end] += flow;
     }
 }
-bool getPath(vector<int> graph[100], int rGraph[100][100], int n, int parent[100])
+bool getPath(vector<int> graph[100], long long rGraph[100][100], int n, int parent[100])
 {
     bool visited[100];
     memset(visited, 0, sizeof(visited));
@@ -67,14 +66,14 @@ bool getPath(vector<int> graph[100], int rGraph[100][100], int n, int parent[100
     // true, else false
     return (visited[n] == true);
 }
-int edmondsKarp(vector<int> graph[100], int flowMatrix[100][100], int n, int m)
+long long edmondsKarp(vector<int> graph[100], long long flowMatrix[100][100], int n, int m)
 {
-    int maxFlow = 0;
+    long long maxFlow = 0;
     int path[100] = {0};
     int u;
     while (getPath(graph, flowMatrix, n, path))
     {
-        int pathFlow = INT_MAX;
+        long long pathFlow = 9999999999999;
         //i is index of current node and n is parent node of current node
         for (int i = n; i != 1; i = path[i])
         {
@@ -95,13 +94,12 @@ int edmondsKarp(vector<int> graph[100], int flowMatrix[100][100], int n, int m)
 
 int main()
 {
-    int n = 4; //Amount of nodes
+    int n = 2; //Amount of nodes
     //cin >> n;
-    int m = 5; //Amount of edges
-    //cin >> n;
+    int m = 3; //Amount of edges
+    //cin >> m;
     vector<int> graph[100];
-    int flowMatrix[100][100];
-    int residualMatrix[100][100];
+    long long flowMatrix[100][100];
     createGraph(graph, flowMatrix, n, m);
     cout << edmondsKarp(graph, flowMatrix, n, m);
 }
