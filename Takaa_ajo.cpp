@@ -7,14 +7,13 @@ using namespace std;
 /*
 Kaaleppi on juuri ryöstänyt pankin ja aikoo paeta kaupungista sataman kautta. Kuitenkin poliisi haluaa pysäyttää hänet sulkemalla joitakin katuja.
 Mikä on pienin määrä katuja, jotka poliisin täytyy sulkea, jotta ei ole mitään reittiä pankista satamaan?
-
 Syöte
 Ensimmäisellä rivillä on kaksi kokonaislukua n ja m: risteysten ja katujen määrä. Risteykset on numeroitu 1,2,…,n. Pankki on risteyksessä 1 ja satama on risteyksessä n.
 Sitten tulee m riviä, jotka kuvaavat kadut. Jokaisella rivillä on kaksi kokonaislukua a ja b: risteysten a ja b välillä on katu. Kaikki kadut ovat kaksisuuntaisia, ja kahden risteyksen välillä on enintään yksi katu.
 */
 void createGraph(vector<int> graph[100], vector<int> edges[100], int n, int m)
 {
-    vector<int> inputL = {1, 2, 1, 3, 2, 3, 3, 4, 1, 4};
+    vector<int> inputL = {1,2,1,3,2,4,3,4};
     int j = 0, start, end;
     for (int i = 0; i < m; i++)
     {
@@ -41,15 +40,22 @@ bool uniteNodes(int edgeInd, int n, vector<int> edges[100], int m)
         if(n2==1||n2==n){
             return false;
         }
-        
     }
     else if(n2==1||n2==n){
         int k = n1;
         n1 = n2;
         n2= k;
     }
+    else{
+        int rnd = (rand() % 2);
+        if(rnd == 0){
+        int k = n1;
+        n1 = n2;
+        n2= k;
+    }
+    }
+    
     //Decide which node will be 
-    //TODO valinta
     //cout << "Yhdistetään " << n1 << " ja " << n2 << "\n";
     //Goes throught every edge
     for(int i = 0; i < m; i++){
@@ -84,29 +90,29 @@ bool uniteNodes(int edgeInd, int n, vector<int> edges[100], int m)
 //Using Kargers algorithm to get one cut
 void karger(vector<int> graph[100], vector<int> edges[100], int n, int m, int &best, vector<pair<int,int>> &bestEdges)
 {
+    vector <int> next;
     for(int i = 0; i < m; i++){
         edges[i][2] = edges[i][0];
         edges[i][3] = edges[i][1];
+        next.push_back(i);
     }
+    //Shuffle vector next
+    srand((unsigned)time(0));
+    for (int i = 0; i < m - 1; i++) {
+      int j = i + rand() % (m - i);
+      swap(next[i], next[j]);
+   }
+
     int nLeft = n;
-    vector<int> edgeI;
-    for (int i = 0; i <= n; i++)
-    {
-        edgeI.push_back(i);
-    }
-    int i;
+    
+    int i = 0;
     while (nLeft > 2)
     {
-        srand((unsigned)time(0));
-        int rnd = (rand() % m);
-        while(edges[rnd][3]==-1){
-        rnd = (rand() % m);
-        }
-
-        if (uniteNodes(edgeI[rnd],n, edges,m))
+        if (uniteNodes(next[i],n, edges,m))
         {
             nLeft--;
         }
+        i++;
     }
     //Collect edgest that are left
     vector<pair<int,int>> currentEdges;
@@ -142,7 +148,7 @@ int main()
 {
     int n = 4;
     //cin >> n;
-    int m = 5;
+    int m = 4;
     //cin >> m;
     vector<int> edges[100];
     vector<int> graph[100];
