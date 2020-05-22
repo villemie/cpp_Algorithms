@@ -11,18 +11,13 @@ Syöte
 Ensimmäisellä rivillä on kaksi kokonaislukua n ja m: risteysten ja katujen määrä. Risteykset on numeroitu 1,2,…,n. Pankki on risteyksessä 1 ja satama on risteyksessä n.
 Sitten tulee m riviä, jotka kuvaavat kadut. Jokaisella rivillä on kaksi kokonaislukua a ja b: risteysten a ja b välillä on katu. Kaikki kadut ovat kaksisuuntaisia, ja kahden risteyksen välillä on enintään yksi katu.
 */
-void createGraph(vector<int> graph[100], vector<int> edges[100], int n, int m)
+void createGraph(vector<int> graph[1000], vector<int> edges[1000], int n, int m)
 {
-    vector<int> inputL = {1,2,1,3,2,4,3,4};
-    int j = 0, start, end;
+    int start, end;
     for (int i = 0; i < m; i++)
     {
-        start = inputL[j];
-        j++;
-        //cin >> start;
-        end = inputL[j];
-        j++;
-        //cin >> end;
+        cin >> start;
+        cin >> end;
         edges[i].push_back(start);
         edges[i].push_back(end);
         edges[i].push_back(start);
@@ -31,7 +26,7 @@ void createGraph(vector<int> graph[100], vector<int> edges[100], int n, int m)
         graph[end].push_back(start);
     }
 }
-bool uniteNodes(int edgeInd, int n, vector<int> edges[100], int m)
+bool uniteNodes(int edgeInd, int n, vector<int> edges[1000], int m)
 {
     //n2 will be integrated to n1 and all its edges will lead to n1. All edges between n1 and n2 will be removed
     int n1 = edges[edgeInd][2];
@@ -47,6 +42,7 @@ bool uniteNodes(int edgeInd, int n, vector<int> edges[100], int m)
         n2= k;
     }
     else{
+        srand((unsigned)time(0));
         int rnd = (rand() % 2);
         if(rnd == 0){
         int k = n1;
@@ -88,20 +84,20 @@ bool uniteNodes(int edgeInd, int n, vector<int> edges[100], int m)
     return true;
 }
 //Using Kargers algorithm to get one cut
-void karger(vector<int> graph[100], vector<int> edges[100], int n, int m, int &best, vector<pair<int,int>> &bestEdges)
+void karger(vector<int> graph[1000], vector<int> edges[1000], int n, int m, int &best, vector<pair<int,int>> &bestEdges, vector <int> &next)
 {
-    vector <int> next;
+    
+    //vector <int> next;
     for(int i = 0; i < m; i++){
         edges[i][2] = edges[i][0];
         edges[i][3] = edges[i][1];
         next.push_back(i);
     }
     //Shuffle vector next
-    srand((unsigned)time(0));
     for (int i = 0; i < m - 1; i++) {
       int j = i + rand() % (m - i);
       swap(next[i], next[j]);
-   }
+    }
 
     int nLeft = n;
     
@@ -124,34 +120,73 @@ void karger(vector<int> graph[100], vector<int> edges[100], int n, int m, int &b
         }
     }
     //If answer is best if will be saved
-    cout << "Eräs vastaus on " << edgesN << "\n";
     if(edgesN<best){
         best = edgesN;
         bestEdges = currentEdges;
     }
 
 }
-void getMinCut(vector<int> graph[100], vector<int> edges[100], int n, int m)
+//If start or destination has less edges than current smallest it is the answer
+void checkStart(vector<int> edges[1000], int n, int m, int &best, vector<pair<int,int>> &bestEdges){
+    int startEdges = 0;
+    vector<pair<int,int>> currentEdges;
+    for(int i = 0; i<m;i++){
+        if((edges[i][0]==1)||(edges[i][1])==1){
+            currentEdges.push_back(make_pair(edges[i][0],edges[i][1]));
+            startEdges++;
+        }
+    }
+    if(startEdges<best){
+        bestEdges = currentEdges;
+        best = startEdges;
+    }
+    //Check if onyl destination should be cut off
+    startEdges = 0;
+    currentEdges.clear();
+    for(int i = 0; i<m;i++){
+        if((edges[i][0]==n)||(edges[i][1])==n){
+            currentEdges.push_back(make_pair(edges[i][0],edges[i][1]));
+            startEdges++;
+        }
+    }
+    if(startEdges<best){
+        bestEdges = currentEdges;
+        best = startEdges;
+    }
+}
+
+void getMinCut(vector<int> graph[1000], vector<int> edges[1000], int n, int m)
 {
+    //Try to find two times shortest path, if second time fails only one edge needs to be cut
+    vector <int> next;
+    for(int i = 0; i < m; i++){
+        next.push_back(i);
+    }
+    srand((unsigned)time(0));
+    for (int i = 0; i < m - 1; i++) {
+      int j = i + rand() % (m - i);
+      swap(next[i], next[j]);
+    }
     int best = 9999;
     vector<pair<int,int>> bestEdges; 
-    for(int i = 0; i<10;i++){
-    karger(graph, edges, n, m, best, bestEdges);
+    for(int i = 0; i<500;i++){
+    karger(graph, edges, n, m, best, bestEdges, next);
     }
-    cout << "VASTAUS:" << best << "\n";
+    checkStart(edges,n,m, best, bestEdges);
+    cout << best << "\n";
     for(int i = 0; i<best;i++){
-        cout << bestEdges[i].first << "-" << bestEdges[i].second << " leikataan\n";
+        cout << bestEdges[i].first << " " << bestEdges[i].second <<"\n";
     }
     
 }
 int main()
 {
-    int n = 4;
-    //cin >> n;
-    int m = 4;
-    //cin >> m;
-    vector<int> edges[100];
-    vector<int> graph[100];
+    int n;
+    cin >> n;
+    int m;
+    cin >> m;
+    vector<int> edges[1000];
+    vector<int> graph[1000];
     createGraph(graph, edges, n, m);
     getMinCut(graph, edges, n, m);
 }
