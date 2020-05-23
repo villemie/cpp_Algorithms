@@ -5,48 +5,47 @@
 using namespace std;
 /*
 Annettuna on taulukko, jossa on n lukua. Tehtäväsi on määrittää jokaiselle k luvun yhtenäiselle alitaulukolle, mikä on useimmin esiintyvä luku alitaulukossa. Jos vastaus ei ole yksikäsitteinen, valitaan pienin luvuista.
-
 Syöte
 Syötteen ensimmäisellä rivillä on kaksi kokonaislukua n ja k: taulukon koko ja alitaulukon koko.
 Seuraavalla rivillä on n kokonaislukua t1,t2,…,tn: taulukon sisältö.
 */
-void addNumber(int a[100], unordered_map<int, int> &m, set<int> &s, int add)
+void addNumber(unordered_map<int, int> &m, set<int> &s, int add)
 {
+
     //First occurance
-    if(a[add] == 0){
-        a[add]++;
+    if(s.find(add) == s.end()){
         s.emplace(add);
     }
     //Second occurance
-    else if(a[add] == 1){
-        a[add]++;
+    else if(m.find(add) == m.end()){
         m.emplace(add, 2);
     }
     //Number have occured more than twice
     else{
-        a[add]++;
         auto it = m.find(add);
         if(it != m.end()){
         it->second++;
         } 
     }
 }
-void removeNumber(int a[100], unordered_map<int, int> &m, set<int> &s, int remove){
-    if(a[remove] < 2){
-        s.erase(remove);
-    }
-    else if(a[remove] < 3){
-        m.erase(remove);
-    }
-    else{
-        auto it = m.find(remove);
-        if(it!=m.end()){
+
+void removeNumber(unordered_map<int, int> &m, set<int> &s, int remove){
+    auto it = m.find(remove);
+    if(it != m.end()){
+        if(it->second < 3){
+            m.erase(it->first);
+        }
+        else{
             it->second--;
         }
+    } 
+    else if(s.find(remove) != s.end()){
+        s.erase(remove);
     }
-    a[remove]--;
+    
 }
-void insertFirst(int a[100], vector<int> &input, int k, int n, unordered_map<int, int> &m, set<int> &s)
+
+void insertFirst(vector<int> &input, int k, int n, unordered_map<int, int> &m, set<int> &s)
 {
     //vector<int> v = {2, 1, 1, 5, 1, 1, 5, 1};
     //vector<int> v = {5,2,8,2,3,7,6,2,10,6};
@@ -63,7 +62,7 @@ void insertFirst(int a[100], vector<int> &input, int k, int n, unordered_map<int
     //Insert first k-1 numbers
     for (int i = 0; i < k-1; i++)
     {
-        addNumber(a, m, s, input[i]);
+        addNumber(m, s, input[i]);
     }
 }
 //Gets most common number in given subarray
@@ -89,12 +88,12 @@ void getCommon(unordered_map<int, int> &m, set<int> &s){
         cout << highestI << " ";
     }
 }
-void findAnswer(int a[100], vector<int> &input, int k, int n, unordered_map<int, int> &m, set<int> &s)
+void findAnswer(vector<int> &input, int k, int n, unordered_map<int, int> &m, set<int> &s)
 {
     for(int i = k-1; i < n;i++){
-        addNumber(a, m, s, input[i]);
+        addNumber(m, s, input[i]);
         getCommon(m,s);
-        removeNumber(a, m, s, input[i-k+1]);
+        removeNumber(m, s, input[i-k+1]);
     }
 }
 int main()
@@ -106,7 +105,6 @@ int main()
     vector<int> input;
     unordered_map<int, int> m; //If number has more than one occurance amount is stored here
     set<int> s;      //If map is empty returns smalles number currenly active
-    int a[100] = {}; // Stores amount of occurances
-    insertFirst(a, input, k, n, m, s);
-    findAnswer(a, input, k, n, m, s);
+    insertFirst(input, k, n, m, s);
+    findAnswer(input, k, n, m, s);
 }
